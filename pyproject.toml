@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "web-python-03"
+version = "0.1.0"
+description = ""
+authors = ["Elizaveta Psar <105010678+Psar-Elizaveta@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
