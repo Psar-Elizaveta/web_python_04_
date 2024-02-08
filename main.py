@@ -101,30 +101,31 @@ class Framework(BaseHTTPRequestHandler):
 #         logging.error(err)
 #     except OSError as err:
 #         logging.error(err)
+
+
 def save_data_from_form(data):
-    parse_data = urllib.parse.unquote_plus(data.decode())
-    received_data = str(datetime.now())
+    data_parse = urllib.parse.unquote_plus(data.decode())
     try:
-        parse_dict = {key: value for key, value in [el.split('=') for el in parse_data.split('&')]}
-        parse_dict['timestamp'] = received_data
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        new_data = {current_time: {key: value for key, value in [el.split('=') for el in data_parse.split('&')]}}
 
-        storage_dir = 'storage'
-        if not os.path.exists(storage_dir):
-            os.makedirs(storage_dir)
+        file_path = "storage/data.json"
 
-        storage_file = 'storage/data.json'
-        if os.path.exists(storage_file):
-            with open(storage_file, 'r', encoding='utf-8') as file:
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
                 existing_data = json.load(file)
-            existing_data.append(parse_dict)
-        else:
-            existing_data = [parse_dict]
+        except FileNotFoundError:
+            existing_data = {}
 
-        with open(storage_file, 'w', encoding='utf-8') as file:
-            json.dump(existing_data, file, ensure_ascii=False, indent=4)
-            # logging.info(f"Message '{existing_data}' saved successfully.")
-    except (ValueError, OSError) as err:
-        logging.error(err)
+        existing_data.update(new_data)
+
+        with open(file_path, "w", encoding="utf-8") as file:
+            json.dump(existing_data, file, ensure_ascii=False, indent=2)
+
+    except ValueError as error:
+        logging.error(f"ValueError: {error}")
+    except OSError as oser:
+        logging.error(f"OSError: {oser}")
 
 
 def run_socket_server(host, port):
